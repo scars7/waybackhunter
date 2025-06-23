@@ -1,4 +1,4 @@
-# === Required Python Packages for Wayback Sensitive Data Scanner ===
+# Required Python Packages for Wayback.py
 
 # For making HTTP requests to archived pages
 requests>=2.31.0
