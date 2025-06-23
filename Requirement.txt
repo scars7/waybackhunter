@@ -1,0 +1,13 @@
+# === Required Python Packages for Wayback Sensitive Data Scanner ===
+
+# For making HTTP requests to archived pages
+requests>=2.31.0
+
+# For parsing and extracting readable content from HTML
+beautifulsoup4>=4.12.2
+
+# For querying the Wayback Machine (CDX API)
+waybackpy>=3.0.6
+
+# Optional: Explicitly include if suppressing HTTPS warnings or managing TLS directly
+# urllib3>=2.2.1
