@@ -12,7 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 from waybackpy import WaybackMachineCDXServerAPI
 
-# --- Improved Sensitive Patterns ---
+# Define regex patterns to detect various sensitive data
 SENSITIVE_PATTERNS = {
     "AWS Access Key": r"\bAKIA[0-9A-Z]{16}\b",
     "Google API Key": r"\bAIza[0-9A-Za-z\\-_]{35}\b",
@@ -22,7 +22,7 @@ SENSITIVE_PATTERNS = {
     "Generic Secret": r"(?i)\b(?:secret|token|key|credential)[\"']?\s*[:=]\s*[\"']([a-z0-9_\\-]{20,})[\"']"
 }
 
-# --- Fixed Entropy Calculation ---
+# Calculate Shannon entropy to detect high entropy secrets
 def calculate_entropy(s):
     if not s:
         return 0
@@ -32,11 +32,12 @@ def calculate_entropy(s):
         entropy -= p * math.log2(p)
     return entropy
 
-def extract_high_entropy_strings(text, threshold=4.5):  # Increased threshold
+# Extract high entropy strings as potential secrets
+def extract_high_entropy_strings(text, threshold=4.5):
     words = re.findall(r"\b[a-zA-Z0-9_\\-]{20,}\b", text)
     return [w for w in words if calculate_entropy(w) > threshold]
 
-# --- Robust Wayback Fetching ---
+# Fetch archived URLs using Wayback Machine CDX API
 def fetch_urls(domain):
     print(f"[+] Fetching URLs from Wayback Machine for: {domain}")
     try:
@@ -52,7 +53,7 @@ def fetch_urls(domain):
         print(f"[-] Wayback Machine Error: {e}")
         return []
 
-# --- Scan URL with retries and backoff ---
+# Scan a single URL for secrets with retry logic
 def scan_url(url, proxies=None, max_retries=3):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) WayHunter/1.0"}
     attempt = 0
@@ -64,7 +65,7 @@ def scan_url(url, proxies=None, max_retries=3):
                 timeout=15,
                 proxies=proxies,
                 headers=headers,
-                verify=False
+                verify=False  # Disable SSL verification (for controlled scanning only)
             )
             if resp.status_code != 200:
                 attempt += 1
@@ -75,6 +76,7 @@ def scan_url(url, proxies=None, max_retries=3):
             text = soup.get_text()
             findings = []
 
+            # Match based on sensitive regex patterns
             for label, pattern in SENSITIVE_PATTERNS.items():
                 for match in re.finditer(pattern, text):
                     secret = match.group(1) if match.lastindex else match.group(0)
@@ -84,6 +86,7 @@ def scan_url(url, proxies=None, max_retries=3):
                         "url": url
                     })
 
+            # Match high entropy strings
             for secret in extract_high_entropy_strings(text):
                 findings.append({
                     "type": "High Entropy String",
@@ -91,7 +94,7 @@ def scan_url(url, proxies=None, max_retries=3):
                     "url": url
                 })
 
-            time.sleep(0.5 + random.uniform(0, 0.5))  # Delay between requests
+            time.sleep(0.5 + random.uniform(0, 0.5))  # Throttle requests slightly
             return findings
 
         except requests.exceptions.RequestException as e:
@@ -102,7 +105,7 @@ def scan_url(url, proxies=None, max_retries=3):
     print(f"[-] Failed to scan {url} after {max_retries} attempts")
     return []
 
-# --- Fixed Output Handling ---
+# Save the scan output in both JSON and CSV formats
 def save_results(results, output_prefix):
     output_dir = os.path.dirname(output_prefix) or "."
     os.makedirs(output_dir, exist_ok=True)
@@ -122,7 +125,7 @@ def save_results(results, output_prefix):
     print(f"    - JSON: {os.path.abspath(json_path)}")
     print(f"    - CSV:  {os.path.abspath(csv_path)}")
 
-# --- Optimized Main Function ---
+# Main execution logic
 def main():
     parser = argparse.ArgumentParser(description="WayHunter - Wayback Machine Sensitive Info Scanner")
     parser.add_argument("-d", "--domain", required=True, help="Domain to scan (e.g. example.com)")
@@ -165,3 +168,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
