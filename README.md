@@ -1,5 +1,5 @@
 # WayHunter 
-WayHunter is a powerful Python-based tool designed to discover exposed secrets and sensitive information from archived web pages using the Wayback Machine (web.archive.org). This is useful for security researchers, penetration testers, and bug bounty hunters who want to analyze historical versions of web applications for leaked credentials or tokens.
+WayHunter is a powerful Python-based automation tool designed to discover exposed secrets and sensitive information from archived web pages using the Wayback Machine (web.archive.org). This is useful for security researchers, penetration testers, and bug bounty hunters who want to analyze historical versions of web applications for leaked credentials or tokens.
 
 ##  Features
 
