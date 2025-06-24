@@ -24,7 +24,7 @@ WayHunter is a powerful Python-based automation tool designed to discover expose
 | `--proxy`    | Optional HTTP proxy (e.g., `http://127.0.0.1:8080`) |
 
  ## Example
- python wayback.py -d example.com -o results/wakatime --threads 4 --max-urls 100
+ python wayback.py -d example.com -o results/output.txt --threads 4 --max-urls 100
 
  ## Legal Disclaimer
 This tool is intended for educational purposes and authorized testing only. Do not scan domains you do not own or have explicit permission to assess.
